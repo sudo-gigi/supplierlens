@@ -30,7 +30,7 @@ The whole process takes under 10 seconds.
 
 ## The Seven Risk Dimensions
 
-These dimensions were designed from real procurement experience — not textbook frameworks.
+These dimensions were designed from real procurement experience.
 
 | Dimension | What it measures |
 |---|---|
