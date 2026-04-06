@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SupplierLens — International Supplier Risk Evaluator</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:    #1B3A5C;
+    --blue:    #2E6DA4;
+    --light:   #EAF3FB;
+    --green:   #1E8449;
+    --amber:   #D68910;
+    --red:     #C0392B;
+    --gray:    #F4F6F7;
+    --border:  #D5DCE4;
+    --text:    #1a1a2e;
+    --muted:   #6B7B8D;
+    --white:   #ffffff;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #F0F4F8;
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--navy);
+    padding: 28px 40px;
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+  }
+
+  header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px;
+    color: var(--white);
+    letter-spacing: -0.3px;
+  }
+
+  header p {
+    font-size: 13px;
+    color: rgba(255,255,255,0.55);
+    font-weight: 300;
+  }
+
+  .container {
+    max-width: 780px;
+    margin: 40px auto;
+    padding: 0 24px 80px;
+  }
+
+  .intro {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-bottom: 28px;
+    border-left: 4px solid var(--blue);
+  }
+
+  .intro h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    color: var(--navy);
+    margin-bottom: 8px;
+  }
+
+  .intro p {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  .section {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-bottom: 20px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 22px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-num {
+    width: 28px;
+    height: 28px;
+    background: var(--navy);
+    color: white;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 17px;
+    color: var(--navy);
+  }
+
+  .field {
+    margin-bottom: 20px;
+  }
+
+  .field:last-child { margin-bottom: 0; }
+
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 7px;
+  }
+
+  label .hint {
+    font-weight: 300;
+    color: var(--muted);
+    font-size: 12px;
+    margin-left: 6px;
+  }
+
+  input[type="text"],
+  select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    background: var(--white);
+    transition: border-color 0.2s;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  input[type="text"]:focus,
+  select:focus {
+    outline: none;
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(46,109,164,0.12);
+  }
+
+  .select-wrap {
+    position: relative;
+  }
+
+  .select-wrap::after {
+    content: '';
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid var(--muted);
+    pointer-events: none;
+  }
+
+  .radio-group {
+    display: flex;
+    gap: 10px;
+  }
+
+  .radio-btn {
+    flex: 1;
+    position: relative;
+  }
+
+  .radio-btn input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .radio-btn label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 9px 16px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--muted);
+    transition: all 0.15s;
+    margin: 0;
+    background: var(--gray);
+  }
+
+  .radio-btn input:checked + label {
+    border-color: var(--navy);
+    background: var(--navy);
+    color: white;
+    font-weight: 500;
+  }
+
+  .radio-btn label:hover {
+    border-color: var(--blue);
+    color: var(--blue);
+    background: var(--light);
+  }
+
+  .radio-btn input:checked + label:hover {
+    color: white;
+    background: var(--navy);
+  }
+
+  .radio-group.invalid .radio-btn label {
+    border-color: var(--red);
+    background: #FDF2F2;
+  }
+
+  .validation-error {
+    display: none;
+    color: var(--red);
+    font-size: 12px;
+    margin-top: 6px;
+    font-weight: 500;
+  }
+
+  .validation-error.visible {
+    display: block;
+  }
+
+  .field.has-error label {
+    color: var(--red);
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .submit-area {
+    text-align: center;
+    margin-top: 32px;
+  }
+
+  button[type="submit"] {
+    background: var(--navy);
+    color: white;
+    border: none;
+    padding: 16px 48px;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    letter-spacing: 0.2px;
+  }
+
+  button[type="submit"]:hover {
+    background: var(--blue);
+    transform: translateY(-1px);
+  }
+
+  button[type="submit"]:active {
+    transform: translateY(0);
+  }
+
+  button[type="submit"]:disabled {
+    background: var(--muted);
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .result {
+    display: none;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px;
+    margin-top: 28px;
+    text-align: center;
+  }
+
+  .result.visible { display: block; }
+
+  .result.success { border-left: 4px solid var(--green); }
+  .result.error   { border-left: 4px solid var(--red); }
+
+  .result h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    color: var(--navy);
+    margin-bottom: 10px;
+  }
+
+  .result p {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+
+  .download-btn {
+    display: inline-block;
+    background: var(--green);
+    color: white;
+    padding: 12px 32px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.2s;
+  }
+
+  .download-btn:hover { background: #166538; }
+
+  .spinner {
+    display: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .loading .spinner { display: inline-block; }
+  .loading .btn-text { display: none; }
+
+  .rag-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    margin-left: 8px;
+  }
+
+  .rag-GREEN { background: #EAFAF1; color: var(--green); }
+  .rag-AMBER { background: #FEF9E7; color: var(--amber); }
+  .rag-RED   { background: #FDEDEC; color: var(--red); }
+
+  .score-display {
+    font-family: 'DM Serif Display', serif;
+    font-size: 48px;
+    color: var(--navy);
+    margin: 12px 0;
+  }
+
+  @media (max-width: 600px) {
+    header { padding: 20px; flex-direction: column; gap: 4px; }
+    .container { padding: 0 16px 60px; margin-top: 24px; }
+    .section { padding: 20px; }
+    .two-col { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>SupplierLens</h1>
+  <p>International Supplier Risk Evaluator</p>
+</header>
+
+<div class="container">
+
+  <div class="intro">
+    <h2>Evaluate a supplier before you commit</h2>
+    <p>Answer the questions below about a supplier you are considering. SupplierLens will score them across seven international procurement risk dimensions and generate a PDF report with recommended actions.</p>
+  </div>
+
+  <form id="riskForm">
+
+    <!-- Section 1: Supplier basics -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">1</div>
+        <div class="section-title">Supplier details</div>
+      </div>
+
+      <div class="field">
+        <label>Supplier name</label>
+        <input type="text" name="supplier_name" placeholder="e.g. Shenzhen Industrial Co." required>
+      </div>
+
+      <div class="two-col">
+        <div class="field">
+          <label>Supplier country</label>
+          <input type="text" name="supplier_country" placeholder="e.g. China" required>
+        </div>
+        <div class="field">
+          <label>Supplier invoice currency <span class="hint">3-letter code</span></label>
+          <input type="text" name="supplier_currency" placeholder="e.g. USD" maxlength="3" required>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Currency you will quote the end user in <span class="hint">3-letter code</span></label>
+        <input type="text" name="quote_currency" placeholder="e.g. NGN" maxlength="3" required>
+      </div>
+    </div>
+
+    <!-- Section 2: Shipping -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">2</div>
+        <div class="section-title">Shipping & logistics</div>
+      </div>
+
+      <div class="field">
+        <label>Incoterm</label>
+        <div class="select-wrap">
+          <select name="incoterm" required>
+            <option value="" disabled selected>Select Incoterm</option>
+            <option value="EXW">EXW — Ex Works (maximum risk on buyer)</option>
+            <option value="FCA">FCA — Free Carrier</option>
+            <option value="FAS">FAS — Free Alongside Ship</option>
+            <option value="FOB">FOB — Free On Board</option>
+            <option value="CFR">CFR — Cost and Freight</option>
+            <option value="CIF">CIF — Cost, Insurance and Freight</option>
+            <option value="CPT">CPT — Carriage Paid To</option>
+            <option value="CIP">CIP — Carriage and Insurance Paid</option>
+            <option value="DAP">DAP — Delivered At Place</option>
+            <option value="DDP">DDP — Delivered Duty Paid (least risk on buyer)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="field">
+          <label>Freight mode</label>
+          <div class="radio-group">
+            <div class="radio-btn">
+              <input type="radio" name="freight_mode" id="fm_air" value="air">
+              <label for="fm_air">Air</label>
+            </div>
+            <div class="radio-btn">
+              <input type="radio" name="freight_mode" id="fm_sea" value="sea">
+              <label for="fm_sea">Sea</label>
+            </div>
+            <div class="radio-btn">
+              <input type="radio" name="freight_mode" id="fm_road" value="road">
+              <label for="fm_road">Road</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Route distance</label>
+          <div class="radio-group">
+            <div class="radio-btn">
+              <input type="radio" name="route_distance" id="rd_short" value="short">
+              <label for="rd_short">Short</label>
+            </div>
+            <div class="radio-btn">
+              <input type="radio" name="route_distance" id="rd_med" value="medium">
+              <label for="rd_med">Medium</label>
+            </div>
+            <div class="radio-btn">
+              <input type="radio" name="route_distance" id="rd_long" value="long">
+              <label for="rd_long">Long</label>
+            </div>
+          </div>
+          <span class="validation-error" id="err-route_distance">Please select a route distance.</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Are the goods hazardous?</label>
+        <div class="radio-group">
+          <div class="radio-btn">
+            <input type="radio" name="hazardous" id="haz_yes" value="true">
+            <label for="haz_yes">Yes</label>
+          </div>
+          <div class="radio-btn">
+            <input type="radio" name="hazardous" id="haz_no" value="false" checked>
+            <label for="haz_no">No</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Market access -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">3</div>
+        <div class="section-title">Market access</div>
+      </div>
+
+      <div class="field">
+        <label>Does the supplier sell globally?</label>
+        <div class="radio-group">
+          <div class="radio-btn">
+            <input type="radio" name="sells_globally" id="sg_yes" value="true" checked>
+            <label for="sg_yes">Yes</label>
+          </div>
+          <div class="radio-btn">
+            <input type="radio" name="sells_globally" id="sg_no" value="false">
+            <label for="sg_no">No</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Must you buy via an authorised distributor?</label>
+        <div class="radio-group">
+          <div class="radio-btn">
+            <input type="radio" name="requires_distributor" id="rd2_yes" value="true">
+            <label for="rd2_yes">Yes</label>
+          </div>
+          <div class="radio-btn">
+            <input type="radio" name="requires_distributor" id="rd2_no" value="false" checked>
+            <label for="rd2_no">No</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Does the supplier restrict sales by country or region? <span class="hint">e.g. US/UK only</span></label>
+        <div class="radio-group">
+          <div class="radio-btn">
+            <input type="radio" name="country_restrictions" id="cr_yes" value="true">
+            <label for="cr_yes">Yes</label>
+          </div>
+          <div class="radio-btn">
+            <input type="radio" name="country_restrictions" id="cr_no" value="false" checked>
+            <label for="cr_no">No</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4: Quality assurance -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">4</div>
+        <div class="section-title">Quality assurance</div>
+      </div>
+
+      <div class="field">
+        <label>Is the supplier ISO certified?</label>
+        <div class="radio-group">
+          <div class="radio-btn">
+            <input type="radio" name="iso_certified" id="iso_yes" value="true">
+            <label for="iso_yes">Yes</label>
+          </div>
+          <div class="radio-btn">
+            <input type="radio" name="iso_certified" id="iso_no" value="false" checked>
+            <label for="iso_no">No</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Is independent third party inspection available at the supplier's location?</label>
+        <div class="radio-group">
+          <div class="radio-btn">
+            <input type="radio" name="third_party_inspection" id="tpi_yes" value="true">
+            <label for="tpi_yes">Yes</label>
+          </div>
+          <div class="radio-btn">
+            <input type="radio" name="third_party_inspection" id="tpi_no" value="false" checked>
+            <label for="tpi_no">No</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Does the supplier have a cross-border returns or dispute process?</label>
+        <div class="radio-group">
+          <div class="radio-btn">
+            <input type="radio" name="cross_border_returns" id="cbr_yes" value="true">
+            <label for="cbr_yes">Yes</label>
+          </div>
+          <div class="radio-btn">
+            <input type="radio" name="cross_border_returns" id="cbr_no" value="false" checked>
+            <label for="cbr_no">No</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 5: Availability -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">5</div>
+        <div class="section-title">Supplier availability</div>
+      </div>
+
+      <div class="field">
+        <label>Are there multiple suppliers available for this item?</label>
+        <div class="radio-group">
+          <div class="radio-btn">
+            <input type="radio" name="multiple_suppliers" id="ms_yes" value="true" checked>
+            <label for="ms_yes">Yes</label>
+          </div>
+          <div class="radio-btn">
+            <input type="radio" name="multiple_suppliers" id="ms_no" value="false">
+            <label for="ms_no">No</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Is this a single source or hard to find item? <span class="hint">e.g. obsolete, specialist</span></label>
+        <div class="radio-group">
+          <div class="radio-btn">
+            <input type="radio" name="single_source" id="ss_yes" value="true">
+            <label for="ss_yes">Yes</label>
+          </div>
+          <div class="radio-btn">
+            <input type="radio" name="single_source" id="ss_no" value="false" checked>
+            <label for="ss_no">No</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Is the lead time longer than 4 weeks?</label>
+        <div class="radio-group">
+          <div class="radio-btn">
+            <input type="radio" name="long_lead_time" id="llt_yes" value="true">
+            <label for="llt_yes">Yes</label>
+          </div>
+          <div class="radio-btn">
+            <input type="radio" name="long_lead_time" id="llt_no" value="false" checked>
+            <label for="llt_no">No</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="submit-area">
+      <button type="submit" id="submitBtn">
+        <span class="btn-text">Generate Risk Report</span>
+        <span class="spinner"></span>
+      </button>
+    </div>
+
+  </form>
+
+  <!-- Result area -->
+  <div class="result" id="result">
+    <h3 id="resultTitle">Your report is ready</h3>
+    <div class="score-display" id="scoreDisplay"></div>
+    <p id="resultMsg"></p>
+    <a href="#" class="download-btn" id="downloadLink" target="_blank" rel="noopener noreferrer">Download PDF Report</a>
+  </div>
+
+</div>
+
+<script>
+  const API_URL = "YOUR API URL";
+
+  function validateForm() {
+    const radioGroups = ['freight_mode', 'route_distance'];
+    let valid = true;
+
+    radioGroups.forEach(name => {
+      const selected = document.querySelector(`input[name="${name}"]:checked`);
+      const errEl = document.getElementById(`err-${name}`);
+      const group = document.querySelector(`input[name="${name}"]`).closest('.field');
+
+      if (!selected) {
+        valid = false;
+        if (errEl) errEl.classList.add('visible');
+        if (group) group.classList.add('has-error');
+        document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+          r.closest('.radio-group') && r.closest('.radio-group').classList.add('invalid');
+        });
+      } else {
+        if (errEl) errEl.classList.remove('visible');
+        if (group) group.classList.remove('has-error');
+        document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+          r.closest('.radio-group') && r.closest('.radio-group').classList.remove('invalid');
+        });
+      }
+    });
+
+    if (!valid) {
+      const firstErr = document.querySelector('.validation-error.visible');
+      if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    return valid;
+  }
+
+  document.getElementById('riskForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    if (!validateForm()) return;
+
+    const btn = document.getElementById('submitBtn');
+    const result = document.getElementById('result');
+    btn.disabled = true;
+    btn.classList.add('loading');
+    result.className = 'result';
+
+    const fd = new FormData(this);
+    const payload = {
+      supplier_name:          fd.get('supplier_name'),
+      supplier_country:       fd.get('supplier_country'),
+      supplier_currency:      fd.get('supplier_currency').toUpperCase(),
+      quote_currency:         fd.get('quote_currency').toUpperCase(),
+      incoterm:               fd.get('incoterm'),
+      freight_mode:           fd.get('freight_mode'),
+      route_distance:         fd.get('route_distance'),
+      hazardous:              fd.get('hazardous') === 'true',
+      sells_globally:         fd.get('sells_globally') === 'true',
+      requires_distributor:   fd.get('requires_distributor') === 'true',
+      country_restrictions:   fd.get('country_restrictions') === 'true',
+      iso_certified:          fd.get('iso_certified') === 'true',
+      third_party_inspection: fd.get('third_party_inspection') === 'true',
+      cross_border_returns:   fd.get('cross_border_returns') === 'true',
+      multiple_suppliers:     fd.get('multiple_suppliers') === 'true',
+      single_source:          fd.get('single_source') === 'true',
+      long_lead_time:         fd.get('long_lead_time') === 'true',
+    };
+
+    try {
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) throw new Error('Server error');
+
+      const text = await response.text();
+      console.log("Raw response:", text);
+      const data = JSON.parse(text);
+      const rag = data.rag;
+      const score = data.overall_score;
+
+      document.getElementById('scoreDisplay').innerHTML =
+        `${score} / 10 <span class="rag-badge rag-${rag}">${rag}</span>`;
+      document.getElementById('resultTitle').textContent =
+        `Risk report for ${payload.supplier_name}`;
+      document.getElementById('resultMsg').textContent =
+        rag === 'RED'
+          ? 'This supplier carries HIGH risk. Review all recommended actions before proceeding.'
+          : rag === 'AMBER'
+          ? 'This supplier carries MODERATE risk. Review the recommended actions below.'
+          : 'This supplier carries LOW risk. Standard due diligence applies.';
+      document.getElementById('downloadLink').href = data.pdf_url;
+
+      result.className = 'result visible success';
+
+    } catch (err) {
+      document.getElementById('resultTitle').textContent = 'Something went wrong';
+      document.getElementById('resultMsg').textContent =
+        'The report could not be generated. Please check your connection and try again.';
+      document.getElementById('scoreDisplay').textContent = '';
+      document.getElementById('downloadLink').style.display = 'none';
+      result.className = 'result visible error';
+    }
+
+    btn.disabled = false;
+    btn.classList.remove('loading');
+    result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+</script>
+</body>
+</html>
